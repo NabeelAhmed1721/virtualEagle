@@ -1,0 +1,24 @@
+------
+PLEASE PUT an X beside the task that is completed thanks!
+------
+
+
+Azfar: Do the tensorflow models using python
+
+Simon: Port them to the front end using nodejs
+
+Nabeel: Make the front end
+
+Nabeel: connect raspberry pi to wifi network
+
+Simon: program Nabeel's raspberry pi in nodejs
+
+Simon will also make it so that: 
+left command will push object to left to recycling and return back to initial state
+right command will push object to right to trash and return back to initial state
+
+Simon: Port that to laptop's nodejs so commands of left and right will be accessible in the browser (/command?action=left or right)
+
+Nabeel: Update accordingly
+
+Someone: setup the materials (motor, bins, breadboard, etc...) so that the motor will push it to either the recycling or trash

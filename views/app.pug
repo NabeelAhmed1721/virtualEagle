@@ -1,0 +1,85 @@
+head
+  link(rel='stylesheet' href='https://maxst.icons8.com/vue-static/landings/line-awesome/font-awesome-line-awesome/css/all.min.css')
+  link(rel='stylesheet' href='../styles/app.css' type='text/css')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js' integrity='sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=' crossorigin='anonymous')
+  meta(charset='UTF-8')
+  title Virtual Eagle
+script.
+  $(window).ready(function() {$('.preloader').delay(0).fadeOut('slow');});
+.preloader
+.decor-slab
+  .link-container
+    a#homeLink(href='../')
+      .return-home-link
+      | Home
+.app-container
+  .app-container-v
+    .logo-container
+      img(src='assets/virtualEagle.png')
+      if predictionI
+        p=predictionI
+    .main-container
+      .video-container
+        video#cam(autoplay='true')
+        canvas#canvas(hidden='')
+      .btn-container
+        button#capture Take a picture
+        button#flip-button Flip camera
+    // Ugly insert by Simon
+    // Lol Nabeel to the rescue
+script.
+  const player = document.getElementById('cam');
+  const canvas = document.getElementById('canvas');
+  const context = canvas.getContext('2d');
+  const captureButton = document.getElementById('capture');
+  var front = false;
+  var constraints = { video: { facingMode: (front ? "user" : "environment") } };
+  async function command(action) {
+  console.log(action);
+  var result = await fetch('/command?action=' + action);
+  var parsed = await result.json();
+  if (!parsed.success) {
+  console.log(parsed.error);
+  alert(parsed.error);
+  }
+  return;
+  }
+  function onButtonClick() {
+  player.pause();
+  // Adjust canvas so we don't get stretched/shrinked images
+  canvas.height = player.srcObject.getVideoTracks()[0].getSettings().height;
+  canvas.width = player.srcObject.getVideoTracks()[0].getSettings().width;
+  // Draw image for later sending it to server
+  context.drawImage(player, 0, 0, player.srcObject.getVideoTracks()[0].getSettings().width, player.srcObject.getVideoTracks()[0].getSettings().height);
+  var request = new XMLHttpRequest();
+  request.onload = async function() { // After we get the server response
+  var response = request.responseText.trim();
+  if (response === 'Recyclable') {
+  await command('left');
+  alert('Recycle!');
+  }
+  else if (response === 'Organic') {
+  await command('right');
+  alert('Organic!');
+  }
+  else {
+  console.log('Weird server response: ' + response);
+  }
+  player.play();
+  }
+  request.open("POST", "/getPrediction", true);
+  request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  request.send('base64Image=' + window.encodeURIComponent(canvas.toDataURL('image/jpeg')));
+  }
+  // Attach the video stream to the video element and autoplay.
+  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+  player.srcObject = stream;
+  });
+  document.getElementById('flip-button').onclick = function() {
+  front = !front;
+  constraints = { video: { facingMode: (front ? "user" : "environment") } };
+  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+  player.srcObject = stream;
+  });
+  };
+  captureButton.addEventListener('click', onButtonClick);
