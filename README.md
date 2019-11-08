@@ -3,3 +3,4 @@ This project was created to classify waste we used a kaggle dataset to train our
 With this program we won the Best Automation Hack.
 Group Members: Nabeel, Azfar, Sharjeel and Simon
 https://devpost.com/software/virtualeagle
+# Waste_Classification
